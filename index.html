@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BizOps - Small Business Management Hub</title>
+  <!-- Tailwind CSS CDN for modern responsive UI -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
+
+  <!-- Top Navigation Header -->
+  <header class="bg-indigo-700 text-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center space-x-2">
+        <span class="text-2xl font-black tracking-tight">BizOps</span>
+        <span class="text-xs bg-indigo-500 text-white px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Business Suite</span>
+      </div>
+      <nav class="flex flex-wrap gap-1 text-sm font-medium">
+        <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-btn px-3 py-1.5 rounded-md bg-indigo-900 text-white">Dashboard</button>
+        <button onclick="switchTab('sales')" id="btn-sales" class="nav-btn px-3 py-1.5 rounded-md hover:bg-indigo-600 transition">Daily Sales</button>
+        <button onclick="switchTab('expenses')" id="btn-expenses" class="nav-btn px-3 py-1.5 rounded-md hover:bg-indigo-600 transition">Expenses</button>
+        <button onclick="switchTab('stock')" id="btn-stock" class="nav-btn px-3 py-1.5 rounded-md hover:bg-indigo-600 transition">Stock & Inventory</button>
+        <button onclick="switchTab('orders')" id="btn-orders" class="nav-btn px-3 py-1.5 rounded-md hover:bg-indigo-600 transition">Orders</button>
+        <button onclick="switchTab('chat')" id="btn-chat" class="nav-btn px-3 py-1.5 rounded-md hover:bg-indigo-600 transition">Customer Chat</button>
+        <button onclick="switchTab('calendar')" id="btn-calendar" class="nav-btn px-3 py-1.5 rounded-md hover:bg-indigo-600 transition">Calendar</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
+
+    <!-- 1. DASHBOARD OVERVIEW -->
+    <section id="dashboard" class="tab-content active space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Today's Sales</p>
+          <h3 class="text-2xl font-bold text-slate-900 mt-1" id="dash-sales-total">$0.00</h3>
+          <span class="text-xs text-emerald-600 font-medium" id="dash-sales-count">0 transactions</span>
+        </div>
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Today's Expenses</p>
+          <h3 class="text-2xl font-bold text-rose-600 mt-1" id="dash-expense-total">$0.00</h3>
+          <span class="text-xs text-slate-500 font-medium" id="dash-expense-count">0 entries</span>
+        </div>
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Net Cash Position</p>
+          <h3 class="text-2xl font-bold text-indigo-700 mt-1" id="dash-net-total">$0.00</h3>
+          <span class="text-xs text-slate-500 font-medium">Sales minus expenses</span>
+        </div>
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Active Orders</p>
+          <h3 class="text-2xl font-bold text-amber-600 mt-1" id="dash-orders-count">0</h3>
+          <span class="text-xs text-slate-500 font-medium" id="dash-lowstock-warning">0 items low in stock</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Recent Activity Feed -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+          <h2 class="text-lg font-bold text-slate-800 mb-3">Quick Actions</h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <button onclick="switchTab('sales')" class="p-3 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-semibold hover:bg-indigo-100 text-center">
+              + New Sale
+            </button>
+            <button onclick="switchTab('expenses')" class="p-3 bg-rose-50 text-rose-700 rounded-lg text-sm font-semibold hover:bg-rose-100 text-center">
+              - Log Expense
+            </button>
+            <button onclick="switchTab('orders')" class="p-3 bg-amber-50 text-amber-700 rounded-lg text-sm font-semibold hover:bg-amber-100 text-center">
+              + Create Order
+            </button>
+            <button onclick="switchTab('stock')" class="p-3 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-semibold hover:bg-emerald-100 text-center">
+              Inventory Check
+            </button>
+            <button onclick="switchTab('chat')" class="p-3 bg-cyan-50 text-cyan-700 rounded-lg text-sm font-semibold hover:bg-cyan-100 text-center">
+              Customer Inbox
+            </button>
+            <button onclick="switchTab('calendar')" class="p-3 bg-purple-50 text-purple-700 rounded-lg text-sm font-semibold hover:bg-purple-100 text-center">
+              View Calendar
+            </button>
+          </div>
+        </div>
+
+        <!-- System Status Summary -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+          <h2 class="text-lg font-bold text-slate-800 mb-3">Operational Alerts</h2>
+          <ul class="space-y-2 text-sm" id="dash-alerts">
+            <li class="p-2.5 bg-slate-50 rounded-lg text-slate-600 flex items-center justify-between">
+              <span>All operational systems running normally.</span>
+              <span class="text-xs font-semibold text-emerald-600">Online</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. DAILY SALES MODULE -->
+    <section id="sales" class="tab-content space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold text-slate-900">Daily Sales Entry</h2>
+        <span class="text-sm text-slate-500" id="sales-today-date"></span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Sales Input Form -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-1">
+          <h3 class="font-bold text-slate-800 mb-4">Record Transaction</h3>
+          <form id="sales-form" onsubmit="addSale(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Item / Service Name</label>
+              <input type="text" id="sale-item" required placeholder="e.g., Catering Buffet Pax" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Quantity</label>
+                <input type="number" id="sale-qty" value="1" min="1" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Unit Price ($)</label>
+                <input type="number" step="0.01" id="sale-price" required placeholder="0.00" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Payment Method</label>
+              <select id="sale-method" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                <option value="Cash">Cash</option>
+                <option value="Online / QR Pay">Online / QR Transfer</option>
+                <option value="Credit / Debit Card">Credit / Debit Card</option>
+                <option value="Invoice / Credit">Invoice / On Credit</option>
+              </select>
+            </div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition">Record Sale</button>
+          </form>
+        </div>
+
+        <!-- Sales History Table -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-2 overflow-x-auto">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-slate-800">Sales Log</h3>
+            <button onclick="clearSales()" class="text-xs text-rose-600 hover:underline">Clear History</button>
+          </div>
+          <table class="w-full text-left text-sm border-collapse">
+            <thead>
+              <tr class="border-b text-slate-400 font-semibold text-xs">
+                <th class="py-2">Time</th>
+                <th class="py-2">Item</th>
+                <th class="py-2">Qty</th>
+                <th class="py-2">Payment</th>
+                <th class="py-2 text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody id="sales-table-body" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. EXPENSES MODULE -->
+    <section id="expenses" class="tab-content space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold text-slate-900">Expense Tracking</h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Expense Input Form -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-1">
+          <h3 class="font-bold text-slate-800 mb-4">Log Outflow</h3>
+          <form id="expense-form" onsubmit="addExpense(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Expense Description</label>
+              <input type="text" id="expense-desc" required placeholder="e.g., Raw Food Supplies, Fuel" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-rose-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Amount ($)</label>
+              <input type="number" step="0.01" id="expense-amount" required placeholder="0.00" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-rose-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Category</label>
+              <select id="expense-cat" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-rose-500 outline-none">
+                <option value="Inventory / Raw Materials">Inventory / Raw Materials</option>
+                <option value="Utilities & Bills">Utilities & Bills</option>
+                <option value="Salaries / Wages">Salaries / Wages</option>
+                <option value="Packaging & Delivery">Packaging & Delivery</option>
+                <option value="Marketing / Ads">Marketing / Ads</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Date</label>
+              <input type="date" id="expense-date" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-rose-500 outline-none" />
+            </div>
+            <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition">Record Expense</button>
+          </form>
+        </div>
+
+        <!-- Expenses Table -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-2 overflow-x-auto">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-slate-800">Expense Log</h3>
+            <button onclick="clearExpenses()" class="text-xs text-rose-600 hover:underline">Clear History</button>
+          </div>
+          <table class="w-full text-left text-sm border-collapse">
+            <thead>
+              <tr class="border-b text-slate-400 font-semibold text-xs">
+                <th class="py-2">Date</th>
+                <th class="py-2">Description</th>
+                <th class="py-2">Category</th>
+                <th class="py-2 text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody id="expense-table-body" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. STOCK & INVENTORY MODULE -->
+    <section id="stock" class="tab-content space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold text-slate-900">Inventory & Stock Control</h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Stock Entry Form -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-1">
+          <h3 class="font-bold text-slate-800 mb-4">Add / Update Stock Item</h3>
+          <form id="stock-form" onsubmit="addStockItem(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Item / Product Name</label>
+              <input type="text" id="stock-name" required placeholder="e.g., Basmati Rice 10kg" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">SKU / Code</label>
+              <input type="text" id="stock-sku" placeholder="e.g., SKU-001" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Current Quantity</label>
+                <input type="number" id="stock-qty" required min="0" value="10" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Reorder Level</label>
+                <input type="number" id="stock-min" required min="1" value="5" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+              </div>
+            </div>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition">Save Inventory Item</button>
+          </form>
+        </div>
+
+        <!-- Inventory List -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-2 overflow-x-auto">
+          <h3 class="font-bold text-slate-800 mb-4">Current Stock Catalog</h3>
+          <table class="w-full text-left text-sm border-collapse">
+            <thead>
+              <tr class="border-b text-slate-400 font-semibold text-xs">
+                <th class="py-2">SKU</th>
+                <th class="py-2">Item Name</th>
+                <th class="py-2">Quantity</th>
+                <th class="py-2">Status</th>
+                <th class="py-2 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="stock-table-body" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. ORDERS MODULE -->
+    <section id="orders" class="tab-content space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold text-slate-900">Customer Orders Pipeline</h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- New Order Form -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-1">
+          <h3 class="font-bold text-slate-800 mb-4">Create New Order</h3>
+          <form id="order-form" onsubmit="addOrder(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Customer Name</label>
+              <input type="text" id="order-customer" required placeholder="e.g., Puan Norazlina" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Contact Phone / Email</label>
+              <input type="text" id="order-contact" placeholder="e.g., +6012-3456789" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Order Details</label>
+              <textarea id="order-details" required placeholder="Items, special requests, or delivery info" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none h-20"></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Total Due ($)</label>
+                <input type="number" step="0.01" id="order-total" required placeholder="0.00" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Status</label>
+                <select id="order-status" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                  <option value="Pending">Pending</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Ready">Ready</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition">Create Order</button>
+          </form>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-2 overflow-x-auto">
+          <h3 class="font-bold text-slate-800 mb-4">Orders List</h3>
+          <table class="w-full text-left text-sm border-collapse">
+            <thead>
+              <tr class="border-b text-slate-400 font-semibold text-xs">
+                <th class="py-2">Order ID</th>
+                <th class="py-2">Customer</th>
+                <th class="py-2">Details</th>
+                <th class="py-2">Amount</th>
+                <th class="py-2">Status</th>
+                <th class="py-2 text-right">Update</th>
+              </tr>
+            </thead>
+            <tbody id="orders-table-body" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. CHAT CUSTOMER MODULE -->
+    <section id="chat" class="tab-content space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold text-slate-900">Customer Communication Center</h2>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-3 min-h-[480px]">
+        <!-- Conversations List -->
+        <div class="border-r border-slate-200 p-4 space-y-3">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-bold text-slate-800 text-sm">Customer Inquiries</h3>
+            <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-semibold">Live Mock</span>
+          </div>
+          <div class="space-y-1" id="chat-customer-list">
+            <button onclick="loadChat(0)" class="w-full text-left p-3 rounded-lg bg-indigo-50 border border-indigo-200">
+              <p class="font-semibold text-xs text-indigo-900">Pn. Zuraida (Catering inquiry)</p>
+              <p class="text-xs text-slate-500 truncate">Do you offer vegetarian packages for 50 pax?</p>
+            </button>
+            <button onclick="loadChat(1)" class="w-full text-left p-3 rounded-lg hover:bg-slate-50 transition">
+              <p class="font-semibold text-xs text-slate-800">Mr. Hafiz (Order #102)</p>
+              <p class="text-xs text-slate-500 truncate">Can I change my delivery address?</p>
+            </button>
+          </div>
+        </div>
+
+        <!-- Chat Conversation Area -->
+        <div class="md:col-span-2 flex flex-col h-full justify-between p-4">
+          <div class="border-b pb-2 mb-3">
+            <h3 class="font-bold text-sm text-slate-900" id="active-chat-name">Pn. Zuraida</h3>
+            <span class="text-xs text-emerald-600 font-medium">Active inquiry</span>
+          </div>
+
+          <!-- Messages Body -->
+          <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 pr-2 max-h-80">
+            <div class="bg-slate-100 p-3 rounded-lg max-w-[80%] text-xs text-slate-700">
+              Hi! Do you have slots available for this Saturday catering for around 50 people?
+            </div>
+            <div class="bg-indigo-600 text-white p-3 rounded-lg max-w-[80%] ml-auto text-xs">
+              Hello Puan Zuraida! Yes, we have availability. Let me send over our package options.
+            </div>
+          </div>
+
+          <!-- Message Composer -->
+          <form onsubmit="sendChatMessage(event)" class="mt-4 flex gap-2">
+            <input type="text" id="chat-input" placeholder="Type your reply or canned response..." class="flex-1 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required />
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Send</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. CALENDAR MODULE -->
+    <section id="calendar" class="tab-content space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold text-slate-900">Business Calendar & Schedule</h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- New Event Form -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-1">
+          <h3 class="font-bold text-slate-800 mb-4">Schedule Event / Delivery</h3>
+          <form id="calendar-form" onsubmit="addCalendarEvent(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Event / Task Title</label>
+              <input type="text" id="cal-title" required placeholder="e.g., Wedding Catering Delivery, Supplier Restock" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-purple-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Date</label>
+              <input type="date" id="cal-date" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-purple-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Time</label>
+              <input type="time" id="cal-time" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-purple-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Notes / Location</label>
+              <input type="text" id="cal-notes" placeholder="e.g., Hall B, Level 2" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-purple-500 outline-none" />
+            </div>
+            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition">Save to Calendar</button>
+          </form>
+        </div>
+
+        <!-- Scheduled Events List -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-2">
+          <h3 class="font-bold text-slate-800 mb-4">Upcoming Schedule</h3>
+          <div id="calendar-events-list" class="space-y-3">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- JavaScript Logic & State Management -->
+  <script>
+    // State initialization with localStorage fallback
+    let sales = JSON.parse(localStorage.getItem('biz_sales') || '[]');
+    let expenses = JSON.parse(localStorage.getItem('biz_expenses') || '[]');
+    let stock = JSON.parse(localStorage.getItem('biz_stock') || '[]');
+    let orders = JSON.parse(localStorage.getItem('biz_orders') || '[]');
+    let events = JSON.parse(localStorage.getItem('biz_events') || '[]');
+
+    // Seed default sample data if empty
+    if (stock.length === 0) {
+      stock = [
+        { id: 1, sku: 'SKU-RICE-10', name: 'Fragrant Rice (10kg)', qty: 12, min: 5 },
+        { id: 2, sku: 'SKU-OIL-05', name: 'Cooking Oil (5L)', qty: 3, min: 4 },
+        { id: 3, sku: 'SKU-BOX-50', name: 'Meal Packaging Boxes (50pcs)', qty: 25, min: 10 }
+      ];
+      localStorage.setItem('biz_stock', JSON.stringify(stock));
+    }
+
+    if (events.length === 0) {
+      const today = new Date().toISOString().split('T')[0];
+      events = [
+        { id: 1, title: 'Corporate Lunch Delivery (30 pax)', date: today, time: '12:30', notes: 'Menara B, Floor 14' },
+        { id: 2, title: 'Supplier Rice Restock Arrival', date: today, time: '16:00', notes: 'Rear loading bay' }
+      ];
+      localStorage.setItem('biz_events', JSON.stringify(events));
+    }
+
+    // Tab Navigation
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-indigo-900', 'text-white');
+      });
+
+      const selectedTab = document.getElementById(tabId);
+      if (selectedTab) selectedTab.classList.add('active');
+
+      const activeBtn = document.getElementById('btn-' + tabId);
+      if (activeBtn) activeBtn.classList.add('bg-indigo-900', 'text-white');
+
+      updateDashboard();
+      if (tabId === 'sales') renderSales();
+      if (tabId === 'expenses') renderExpenses();
+      if (tabId === 'stock') renderStock();
+      if (tabId === 'orders') renderOrders();
+      if (tabId === 'calendar') renderCalendar();
+    }
+
+    // 1. SALES
+    function addSale(e) {
+      e.preventDefault();
+      const item = document.getElementById('sale-item').value;
+      const qty = parseInt(document.getElementById('sale-qty').value, 10);
+      const price = parseFloat(document.getElementById('sale-price').value);
+      const method = document.getElementById('sale-method').value;
+
+      const sale = {
+        id: Date.now(),
+        item,
+        qty,
+        price,
+        total: qty * price,
+        method,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      sales.unshift(sale);
+      localStorage.setItem('biz_sales', JSON.stringify(sales));
+      document.getElementById('sales-form').reset();
+      renderSales();
+      updateDashboard();
+    }
+
+    function renderSales() {
+      const tbody = document.getElementById('sales-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = sales.map(s => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2.5 text-slate-500 text-xs">${s.time}</td>
+          <td class="py-2.5 font-medium text-slate-800">${s.item}</td>
+          <td class="py-2.5">${s.qty}</td>
+          <td class="py-2.5"><span class="px-2 py-0.5 text-xs bg-slate-100 rounded-full font-medium text-slate-600">${s.method}</span></td>
+          <td class="py-2.5 text-right font-bold text-slate-900">$${s.total.toFixed(2)}</td>
+        </tr>
+      `).join('') || '<tr><td colspan="5" class="py-4 text-center text-slate-400">No sales recorded yet today.</td></tr>';
+    }
+
+    function clearSales() {
+      if (confirm('Are you sure you want to clear sales history?')) {
+        sales = [];
+        localStorage.setItem('biz_sales', JSON.stringify(sales));
+        renderSales();
+        updateDashboard();
+      }
+    }
+
+    // 2. EXPENSES
+    function addExpense(e) {
+      e.preventDefault();
+      const desc = document.getElementById('expense-desc').value;
+      const amount = parseFloat(document.getElementById('expense-amount').value);
+      const category = document.getElementById('expense-cat').value;
+      const date = document.getElementById('expense-date').value || new Date().toISOString().split('T')[0];
+
+      const expense = { id: Date.now(), desc, amount, category, date };
+      expenses.unshift(expense);
+      localStorage.setItem('biz_expenses', JSON.stringify(expenses));
+      document.getElementById('expense-form').reset();
+      renderExpenses();
+      updateDashboard();
+    }
+
+    function renderExpenses() {
+      const tbody = document.getElementById('expense-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = expenses.map(ex => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2.5 text-slate-500 text-xs">${ex.date}</td>
+          <td class="py-2.5 font-medium text-slate-800">${ex.desc}</td>
+          <td class="py-2.5 text-xs text-slate-500">${ex.category}</td>
+          <td class="py-2.5 text-right font-bold text-rose-600">-$${ex.amount.toFixed(2)}</td>
+        </tr>
+      `).join('') || '<tr><td colspan="4" class="py-4 text-center text-slate-400">No expenses recorded.</td></tr>';
+    }
+
+    function clearExpenses() {
+      if (confirm('Clear all logged expenses?')) {
+        expenses = [];
+        localStorage.setItem('biz_expenses', JSON.stringify(expenses));
+        renderExpenses();
+        updateDashboard();
+      }
+    }
+
+    // 3. STOCK / INVENTORY
+    function addStockItem(e) {
+      e.preventDefault();
+      const name = document.getElementById('stock-name').value;
+      const sku = document.getElementById('stock-sku').value || 'SKU-' + Math.floor(Math.random() * 1000);
+      const qty = parseInt(document.getElementById('stock-qty').value, 10);
+      const min = parseInt(document.getElementById('stock-min').value, 10);
+
+      stock.push({ id: Date.now(), name, sku, qty, min });
+      localStorage.setItem('biz_stock', JSON.stringify(stock));
+      document.getElementById('stock-form').reset();
+      renderStock();
+      updateDashboard();
+    }
+
+    function adjustStock(id, delta) {
+      const item = stock.find(s => s.id === id);
+      if (item) {
+        item.qty = Math.max(0, item.qty + delta);
+        localStorage.setItem('biz_stock', JSON.stringify(stock));
+        renderStock();
+        updateDashboard();
+      }
+    }
+
+    function renderStock() {
+      const tbody = document.getElementById('stock-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = stock.map(s => {
+        const isLow = s.qty <= s.min;
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="py-2.5 text-xs text-slate-500 font-mono">${s.sku}</td>
+            <td class="py-2.5 font-medium text-slate-800">${s.name}</td>
+            <td class="py-2.5 font-bold">${s.qty}</td>
+            <td class="py-2.5">
+              ${isLow 
+                ? '<span class="px-2 py-0.5 text-xs bg-rose-100 text-rose-700 font-semibold rounded-full">Low Stock</span>' 
+                : '<span class="px-2 py-0.5 text-xs bg-emerald-100 text-emerald-700 font-semibold rounded-full">Normal</span>'}
+            </td>
+            <td class="py-2.5 text-right space-x-1">
+              <button onclick="adjustStock(${s.id}, 1)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-xs rounded font-bold">+</button>
+              <button onclick="adjustStock(${s.id}, -1)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-xs rounded font-bold">-</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // 4. ORDERS
+    function addOrder(e) {
+      e.preventDefault();
+      const customer = document.getElementById('order-customer').value;
+      const contact = document.getElementById('order-contact').value;
+      const details = document.getElementById('order-details').value;
+      const total = parseFloat(document.getElementById('order-total').value);
+      const status = document.getElementById('order-status').value;
+
+      const order = {
+        id: '#' + (1000 + orders.length + 1),
+        customer,
+        contact,
+        details,
+        total,
+        status,
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      orders.unshift(order);
+      localStorage.setItem('biz_orders', JSON.stringify(orders));
+      document.getElementById('order-form').reset();
+      renderOrders();
+      updateDashboard();
+    }
+
+    function updateOrderStatus(id, newStatus) {
+      const ord = orders.find(o => o.id === id);
+      if (ord) {
+        ord.status = newStatus;
+        localStorage.setItem('biz_orders', JSON.stringify(orders));
+        renderOrders();
+        updateDashboard();
+      }
+    }
+
+    function renderOrders() {
+      const tbody = document.getElementById('orders-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = orders.map(o => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2.5 font-mono text-xs text-indigo-700 font-bold">${o.id}</td>
+          <td class="py-2.5">
+            <div class="font-medium text-slate-800">${o.customer}</div>
+            <div class="text-xs text-slate-400">${o.contact || ''}</div>
+          </td>
+          <td class="py-2.5 text-xs text-slate-600">${o.details}</td>
+          <td class="py-2.5 font-bold text-slate-900">$${o.total.toFixed(2)}</td>
+          <td class="py-2.5">
+            <span class="px-2 py-0.5 text-xs rounded-full font-semibold ${
+              o.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' :
+              o.status === 'Processing' ? 'bg-amber-100 text-amber-800' :
+              o.status === 'Ready' ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-700'
+            }">${o.status}</span>
+          </td>
+          <td class="py-2.5 text-right">
+            <select onchange="updateOrderStatus('${o.id}', this.value)" class="text-xs border rounded p-1">
+              <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+              <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+              <option value="Ready" ${o.status === 'Ready' ? 'selected' : ''}>Ready</option>
+              <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
+            </select>
+          </td>
+        </tr>
+      `).join('') || '<tr><td colspan="6" class="py-4 text-center text-slate-400">No active orders placed.</td></tr>';
+    }
+
+    // 5. CHAT
+    function sendChatMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const container = document.getElementById('chat-messages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'bg-indigo-600 text-white p-3 rounded-lg max-w-[80%] ml-auto text-xs';
+      msgDiv.innerText = text;
+      container.appendChild(msgDiv);
+      input.value = '';
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function loadChat(index) {
+      const activeName = document.getElementById('active-chat-name');
+      const container = document.getElementById('chat-messages');
+      if (index === 0) {
+        activeName.innerText = 'Pn. Zuraida';
+        container.innerHTML = `
+          <div class="bg-slate-100 p-3 rounded-lg max-w-[80%] text-xs text-slate-700">
+            Hi! Do you have slots available for this Saturday catering for around 50 people?
+          </div>
+          <div class="bg-indigo-600 text-white p-3 rounded-lg max-w-[80%] ml-auto text-xs">
+            Hello Puan Zuraida! Yes, we have availability. Let me send over our package options.
+          </div>
+        `;
+      } else {
+        activeName.innerText = 'Mr. Hafiz';
+        container.innerHTML = `
+          <div class="bg-slate-100 p-3 rounded-lg max-w-[80%] text-xs text-slate-700">
+            Hello, can I update my order delivery time from 2:00 PM to 4:00 PM?
+          </div>
+        `;
+      }
+    }
+
+    // 6. CALENDAR
+    function addCalendarEvent(e) {
+      e.preventDefault();
+      const title = document.getElementById('cal-title').value;
+      const date = document.getElementById('cal-date').value;
+      const time = document.getElementById('cal-time').value;
+      const notes = document.getElementById('cal-notes').value;
+
+      events.push({ id: Date.now(), title, date, time, notes });
+      localStorage.setItem('biz_events', JSON.stringify(events));
+      document.getElementById('calendar-form').reset();
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const container = document.getElementById('calendar-events-list');
+      if (!container) return;
+      container.innerHTML = events.map(ev => `
+        <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-lg flex items-start justify-between">
+          <div>
+            <h4 class="font-bold text-slate-800 text-sm">${ev.title}</h4>
+            <p class="text-xs text-slate-500 mt-0.5">📅 ${ev.date} ${ev.time ? '⏰ ' + ev.time : ''} ${ev.notes ? '• 📍 ' + ev.notes : ''}</p>
+          </div>
+          <span class="text-xs bg-purple-100 text-purple-700 font-semibold px-2 py-0.5 rounded">Scheduled</span>
+        </div>
+      `).join('') || '<p class="text-slate-400 text-sm">No scheduled events or bookings.</p>';
+    }
+
+    // DASHBOARD METRICS CALCULATION
+    function updateDashboard() {
+      const totalSales = sales.reduce((acc, s) => acc + s.total, 0);
+      const totalExpenses = expenses.reduce((acc, e) => acc + e.amount, 0);
+      const net = totalSales - totalExpenses;
+      const activeOrdersCount = orders.filter(o => o.status !== 'Completed').length;
+      const lowStockCount = stock.filter(s => s.qty <= s.min).length;
+
+      document.getElementById('dash-sales-total').innerText = '$' + totalSales.toFixed(2);
+      document.getElementById('dash-sales-count').innerText = `${sales.length} transactions`;
+
+      document.getElementById('dash-expense-total').innerText = '$' + totalExpenses.toFixed(2);
+      document.getElementById('dash-expense-count').innerText = `${expenses.length} entries`;
+
+      document.getElementById('dash-net-total').innerText = (net >= 0 ? '$' : '-$') + Math.abs(net).toFixed(2);
+      document.getElementById('dash-orders-count').innerText = activeOrdersCount;
+      document.getElementById('dash-lowstock-warning').innerText = `${lowStockCount} items low in stock`;
+
+      const alertEl = document.getElementById('dash-alerts');
+      if (alertEl) {
+        if (lowStockCount > 0) {
+          alertEl.innerHTML = `
+            <li class="p-2.5 bg-rose-50 rounded-lg text-rose-700 flex items-center justify-between text-xs font-semibold">
+              <span>⚠️ Action Needed: ${lowStockCount} inventory item(s) are below reorder level.</span>
+              <button onclick="switchTab('stock')" class="underline">View Stock</button>
+            </li>
+          `;
+        } else {
+          alertEl.innerHTML = `
+            <li class="p-2.5 bg-slate-50 rounded-lg text-slate-600 flex items-center justify-between text-xs">
+              <span>All operational systems running normally. No stock shortages.</span>
+              <span class="text-xs font-semibold text-emerald-600">Healthy</span>
+            </li>
+          `;
+        }
+      }
+    }
+
+    // Initial setup on load
+    window.onload = function() {
+      const todayDateStr = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
+      const dateDisplay = document.getElementById('sales-today-date');
+      if (dateDisplay) dateDisplay.innerText = todayDateStr;
+      updateDashboard();
+    };
+  </script>
+</body>
+</html>
